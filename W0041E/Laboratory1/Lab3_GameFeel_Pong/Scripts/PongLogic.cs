@@ -10,6 +10,15 @@ public partial class PongLogic : Node
     public Node3D rightPaddle;
 
     [Export]
+    public Node3D leftGhost;
+    private AnimationPlayer leftAnim;
+
+    [Export]
+    public Node3D rightGhost;
+    private AnimationPlayer rightAnim;
+
+
+    [Export]
     public Node3D ball;
 
     [Export]
@@ -40,6 +49,9 @@ public partial class PongLogic : Node
 
     public override void _Ready()
     {
+        leftAnim = leftGhost.GetNode<AnimationPlayer>("Ghost/AnimationPlayer");
+        rightAnim = rightGhost.GetNode<AnimationPlayer>("Ghost/AnimationPlayer");
+        
         InitMatch();
     }
 
@@ -50,6 +62,22 @@ public partial class PongLogic : Node
         BallMovement((float)delta);
         CheckPaddleCollision();
         CheckForScore();
+
+        leftAnim.AnimationFinished += (StringName animName) =>
+        {
+            if (animName == "Kick")
+            {
+                leftAnim.Play("Floaty");
+            }
+        };
+
+        rightAnim.AnimationFinished += (StringName animName) =>
+        { 
+            if (animName == "Kick")
+            {
+                rightAnim.Play("Floaty");
+            }
+        };
     }
 
     // Ball movement with speed adjustments
@@ -78,6 +106,9 @@ public partial class PongLogic : Node
         rightPaddlePosition.Z = Mathf.Clamp(rightPaddlePosition.Z, (-tableSize.Y + rightPaddle.Scale.Z) / 2, (tableSize.Y - rightPaddle.Scale.Z) / 2);
         rightPaddleVerticalVelocity = (rightPaddlePosition - rightPaddle.Position).Length();
         rightPaddle.Position = rightPaddlePosition;
+
+        leftGhost.Position = new Vector3(leftPaddle.Position.X, 0f, leftPaddle.Position.Z);
+        rightGhost.Position = new Vector3(rightPaddle.Position.X, 0f, rightPaddle.Position.Z);
     }
 
     // Initialize match and set ball starting velocity
@@ -89,6 +120,9 @@ public partial class PongLogic : Node
         float velocityX = horizontalDirection * Mathf.Cos(angle);
         float velocityZ = Mathf.Sin(angle);
         ballVelocity = new Vector3(velocityX, 0, velocityZ) * ballSpeed;
+
+        leftAnim.Play("Floaty");
+        rightAnim.Play("Floaty");
     }
 
     // Restart match
@@ -157,6 +191,15 @@ private void CheckPaddleCollision()
             else
             {
                 ball.GlobalPosition = new Vector3(targetPaddle.GlobalPosition.X + targetPaddle.Scale.X / 2, ball.GlobalPosition.Y, ball.GlobalPosition.Z);
+            }
+
+            if (targetPaddle == leftPaddle)
+            {
+                leftAnim.Play("Kick");
+            }
+            else if (targetPaddle == rightPaddle)
+            {
+                rightAnim.Play("Kick");
             }
         }
     }

@@ -1,0 +1,23 @@
+[gd_resource type="StandardMaterial3D" load_steps=4 format=3 uid="uid://dnd58wj252l63"]
+
+[ext_resource type="Texture2D" uid="uid://dt6yjj2rwkjfp" path="res://Model/Textures/colormap.png" id="1_2kr0m"]
+[ext_resource type="Shader" uid="uid://cbrjgwahh8roj" path="res://Model/Textures/Outline2.gdshader" id="2_s5sg1"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_l638e"]
+render_priority = 0
+shader = ExtResource("2_s5sg1")
+shader_parameter/thickness = 2.0
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/samples = 4
+shader_parameter/sensitivity = 0.1
+shader_parameter/edge_fade = 0.015
+
+[resource]
+resource_name = "colormap"
+next_pass = SubResource("ShaderMaterial_l638e")
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("1_2kr0m")
+emission_enabled = true
+emission = Color(0.81463635, 0, 0.092299245, 1)
+emission_energy_multiplier = 0.33
+emission_texture = ExtResource("1_2kr0m")
